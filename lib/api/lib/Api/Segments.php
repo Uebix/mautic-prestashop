@@ -21,16 +21,48 @@ class Segments extends Api
     protected $endpoint = 'segments';
 
     /**
+     * {@inheritdoc}
+     */
+    protected $listName = 'lists';
+
+    /**
+     * {@inheritdoc}
+     */
+    protected $itemName = 'list';
+
+    /**
+     * @var array
+     */
+    protected $bcRegexEndpoints = array(
+        'segments/(.*?)/contact/(.*?)/add'    => 'segments/$1/contact/add/$2', // 2.6.0
+        'segments/(.*?)/contact/(.*?)/remove' => 'segments/$1/contact/remove/$2', // 2.6.0
+    );
+
+    /**
      * Add a contact to the segment
      *
-     * @param int $id        Segment ID
+     * @param int $segmentId Segment ID
      * @param int $contactId Contact ID
      *
      * @return array|mixed
      */
-    public function addContact($id, $contactId)
+    public function addContact($segmentId, $contactId)
     {
-        return $this->makeRequest($this->endpoint.'/'.$id.'/contact/add/'.$contactId, array(), 'POST');
+        return $this->makeRequest($this->endpoint.'/'.$segmentId.'/contact/'.$contactId.'/add', array(), 'POST');
+    }
+
+
+    /**
+     * Add a contact list of ids to the segment
+     * list of contact must be added in ids[] query parameter
+     * @param int $segmentId Segment ID
+     * @param array $contactIds
+     *
+     * @return array|mixed
+     */
+    public function addContacts($segmentId, $contactIds)
+    {
+        return $this->makeRequest($this->endpoint.'/'.$segmentId.'/contacts/add', $contactIds, 'POST');
     }
 
     /**
@@ -51,18 +83,20 @@ class Segments extends Api
     /**
      * Remove a contact from the segment
      *
-     * @param int $id        Segment ID
+     * @param int $segmentId Segment ID
      * @param int $contactId Contact ID
      *
      * @return array|mixed
      */
-    public function removeContact($id, $contactId)
+    public function removeContact($segmentId, $contactId)
     {
-        return $this->makeRequest($this->endpoint.'/'.$id.'/contact/remove/'.$contactId, array(), 'POST');
+        return $this->makeRequest($this->endpoint.'/'.$segmentId.'/contact/'.$contactId.'/remove', array(), 'POST');
     }
 
     /**
      * Remove a lead from the segment
+     *
+     * @deprecated 2.0.1, use addContact() instead
      *
      * @param int $id     Segment ID
      * @param int $leadId Lead ID
